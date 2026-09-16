@@ -1,0 +1,25 @@
+# ---
+# tags: spark, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+[package]
+name = "cyber-spark"
+version = "0.1.0"
+edition = "2024"
+description = "Spark — opener for a family of files. Not every particle has one."
+license-file = "LICENSE"
+repository = "https://github.com/cyberia-to/spark"
+readme = "README.md"
+keywords = ["cyber", "spark", "particle", "render"]
+categories = ["multimedia"]
+
+[lib]
+name = "spark"
+path = "src/lib.rs"
+
+[dependencies]
+particle = { package = "cyber-particle", path = "../particle" }
+
+[lints.rust]
+missing_debug_implementations = "warn"
