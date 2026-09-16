@@ -8,7 +8,7 @@
 //! can see the graph). Cyb glides `://particle/` → `://file/` only when
 //! [`resolve`] returns `Some`.
 
-use particle::{File, Kind};
+use file::{File, Kind};
 
 /// Named family of openers that ship with cyb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -69,7 +69,7 @@ fn open_text(file: &File) -> Result<Surface, SparkError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use particle::File;
+    use file::File;
 
     #[test]
     fn text_resolves_and_opens() {

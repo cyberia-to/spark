@@ -7,6 +7,6 @@ Not every particle has a spark. That is the condition for gliding `cyb://particl
 This crate is Bevy-free. It returns a [`Surface`]; spacetime mounts it.
 
 ```
-particle  →  spark::resolve(file)  →  Option<SparkId>
+file  →  spark::resolve(file)  →  Option<SparkId>
 spark::open(file)  →  Option<Surface>
 ```
