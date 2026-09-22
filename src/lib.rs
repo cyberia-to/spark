@@ -60,6 +60,10 @@ pub fn open(file: &File) -> Result<Option<Surface>, SparkError> {
 fn open_text(file: &File) -> Result<Surface, SparkError> {
     match core::str::from_utf8(&file.data) {
         Ok(s) => Ok(Surface::Text(s.to_string())),
+        // Unreachable while file::sniff's Kind::Text requires the whole
+        // buffer to already be valid UTF-8 — resolve() never hands this
+        // function bytes that fail here. Kept defensive: open_text is not
+        // itself gated on that guarantee, only its one caller is.
         Err(_) => Err(SparkError {
             message: "text spark: bytes are not utf-8".into(),
         }),
@@ -94,5 +98,47 @@ mod tests {
         data.extend_from_slice(&[0; 8]);
         let f = File::from_data(data);
         assert_eq!(resolve(&f), Some(SparkId::Image));
+    }
+
+    fn assert_opens_as_image(data: Vec<u8>) {
+        let f = File::from_data(data.clone());
+        assert_eq!(resolve(&f), Some(SparkId::Image));
+        match open(&f).unwrap() {
+            Some(Surface::Image { kind, bytes }) => {
+                assert_eq!(kind, f.kind());
+                assert_eq!(bytes, data);
+            }
+            other => panic!("expected image surface, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn png_opens_as_image_surface() {
+        let mut data = vec![0x89, b'P', b'N', b'G', 0x0d, 0x0a, 0x1a, 0x0a];
+        data.extend_from_slice(&[0; 8]);
+        assert_opens_as_image(data);
+    }
+
+    #[test]
+    fn jpeg_opens_as_image_surface() {
+        let mut data = vec![0xff, 0xd8, 0xff];
+        data.extend_from_slice(&[0; 8]);
+        assert_opens_as_image(data);
+    }
+
+    #[test]
+    fn gif_opens_as_image_surface() {
+        let mut data = b"GIF89a".to_vec();
+        data.extend_from_slice(&[0; 8]);
+        assert_opens_as_image(data);
+    }
+
+    #[test]
+    fn webp_opens_as_image_surface() {
+        let mut data = b"RIFF".to_vec();
+        data.extend_from_slice(&[0; 4]);
+        data.extend_from_slice(b"WEBP");
+        data.extend_from_slice(&[0; 8]);
+        assert_opens_as_image(data);
     }
 }
