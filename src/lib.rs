@@ -15,6 +15,10 @@ use file::{File, Kind};
 pub enum SparkId {
     Text,
     Image,
+    /// A paginated document (PDF today); the shell renders pages.
+    Document,
+    /// Video or audio; the shell decodes and plays.
+    Media,
 }
 
 /// What a spark hands spacetime. Bevy-free: the shell mounts this.
@@ -23,6 +27,16 @@ pub enum Surface {
     Text(String),
     /// Raw encoded image; the shell (or a later decoder) paints pixels.
     Image {
+        kind: Kind,
+        bytes: Vec<u8>,
+    },
+    /// Raw encoded document; the shell (or a later decoder) paginates it.
+    Document {
+        kind: Kind,
+        bytes: Vec<u8>,
+    },
+    /// Raw encoded video or audio; the shell (or a later decoder) plays it.
+    Media {
         kind: Kind,
         bytes: Vec<u8>,
     },
@@ -38,6 +52,13 @@ pub fn resolve(file: &File) -> Option<SparkId> {
     match file.kind() {
         Kind::Text => Some(SparkId::Text),
         Kind::ImagePng | Kind::ImageJpeg | Kind::ImageGif | Kind::ImageWebp => Some(SparkId::Image),
+        Kind::Pdf => Some(SparkId::Document),
+        Kind::VideoMp4
+        | Kind::VideoWebm
+        | Kind::AudioMp3
+        | Kind::AudioWav
+        | Kind::AudioOgg
+        | Kind::AudioFlac => Some(SparkId::Media),
         Kind::Opaque => None,
     }
 }
@@ -51,6 +72,14 @@ pub fn open(file: &File) -> Result<Option<Surface>, SparkError> {
     match id {
         SparkId::Text => open_text(file).map(Some),
         SparkId::Image => Ok(Some(Surface::Image {
+            kind: file.kind(),
+            bytes: file.data.clone(),
+        })),
+        SparkId::Document => Ok(Some(Surface::Document {
+            kind: file.kind(),
+            bytes: file.data.clone(),
+        })),
+        SparkId::Media => Ok(Some(Surface::Media {
             kind: file.kind(),
             bytes: file.data.clone(),
         })),
@@ -94,5 +123,78 @@ mod tests {
         data.extend_from_slice(&[0; 8]);
         let f = File::from_data(data);
         assert_eq!(resolve(&f), Some(SparkId::Image));
+    }
+
+    #[test]
+    fn pdf_is_document_spark() {
+        let mut data = b"%PDF-1.7\n".to_vec();
+        data.extend_from_slice(&[0; 16]);
+        let f = File::from_data(data);
+        assert_eq!(resolve(&f), Some(SparkId::Document));
+        match open(&f).unwrap() {
+            Some(Surface::Document { kind, bytes }) => {
+                assert_eq!(kind, Kind::Pdf);
+                assert_eq!(bytes, f.data);
+            }
+            _ => panic!("expected document"),
+        }
+    }
+
+    #[test]
+    fn mp4_is_media_spark() {
+        let mut data = vec![0, 0, 0, 24];
+        data.extend_from_slice(b"ftypisom");
+        data.extend_from_slice(&[0; 8]);
+        let f = File::from_data(data);
+        assert_eq!(resolve(&f), Some(SparkId::Media));
+        match open(&f).unwrap() {
+            Some(Surface::Media { kind, bytes }) => {
+                assert_eq!(kind, Kind::VideoMp4);
+                assert_eq!(bytes, f.data);
+            }
+            _ => panic!("expected media"),
+        }
+    }
+
+    #[test]
+    fn webm_is_media_spark() {
+        let mut data = vec![0x1a, 0x45, 0xdf, 0xa3];
+        data.extend_from_slice(&[0; 16]);
+        let f = File::from_data(data);
+        assert_eq!(resolve(&f), Some(SparkId::Media));
+    }
+
+    #[test]
+    fn wav_is_media_spark() {
+        let mut data = b"RIFF".to_vec();
+        data.extend_from_slice(&0x24u32.to_le_bytes());
+        data.extend_from_slice(b"WAVEfmt ");
+        data.extend_from_slice(&[0; 16]);
+        let f = File::from_data(data);
+        assert_eq!(resolve(&f), Some(SparkId::Media));
+    }
+
+    #[test]
+    fn ogg_is_media_spark() {
+        let mut data = b"OggS\x00\x02".to_vec();
+        data.extend_from_slice(&[0; 20]);
+        let f = File::from_data(data);
+        assert_eq!(resolve(&f), Some(SparkId::Media));
+    }
+
+    #[test]
+    fn flac_is_media_spark() {
+        let mut data = b"fLaC\x00\x00\x00\x22".to_vec();
+        data.extend_from_slice(&[0; 16]);
+        let f = File::from_data(data);
+        assert_eq!(resolve(&f), Some(SparkId::Media));
+    }
+
+    #[test]
+    fn mp3_is_media_spark() {
+        let mut data = b"ID3".to_vec();
+        data.extend_from_slice(&[0; 16]);
+        let f = File::from_data(data);
+        assert_eq!(resolve(&f), Some(SparkId::Media));
     }
 }
