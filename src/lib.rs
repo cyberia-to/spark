@@ -14,6 +14,7 @@ pub mod image;
 pub mod webp;
 pub mod bmp;
 pub mod ico;
+pub mod tiff;
 
 /// Named family of openers that ship with cyb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
