@@ -13,6 +13,7 @@ use file::{File, Kind};
 pub mod image;
 pub mod webp;
 pub mod bmp;
+pub mod ico;
 
 /// Named family of openers that ship with cyb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
