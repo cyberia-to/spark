@@ -38,7 +38,10 @@ pub fn resolve(file: &File) -> Option<SparkId> {
     match file.kind() {
         Kind::Text => Some(SparkId::Text),
         Kind::ImagePng | Kind::ImageJpeg | Kind::ImageGif | Kind::ImageWebp => Some(SparkId::Image),
-        Kind::Opaque => None,
+        // Sniffed but without an opener yet — Opaque today, and the pdf,
+        // video and audio kinds as `file` learns to sniff them: stay on the
+        // particle page until a reader ships.
+        _ => None,
     }
 }
 
