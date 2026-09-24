@@ -19,6 +19,7 @@ pub mod svg;
 pub mod heif;
 pub mod gif_duration;
 pub mod audio;
+pub mod video;
 
 /// Named family of openers that ship with cyb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
