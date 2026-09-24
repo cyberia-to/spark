@@ -24,6 +24,7 @@ pub mod flac;
 pub mod ogg;
 pub mod mp3;
 pub mod pdf;
+pub mod pdf_size;
 
 /// Named family of openers that ship with cyb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
