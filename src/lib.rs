@@ -10,6 +10,8 @@
 
 use file::{File, Kind};
 
+pub mod heif;
+
 /// Named family of openers that ship with cyb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SparkId {
