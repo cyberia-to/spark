@@ -44,7 +44,12 @@ pub fn duration_ms(bytes: &[u8]) -> Option<u64> {
 mod tests {
     use super::*;
 
-    fn streaminfo_body(sample_rate: u32, channels: u8, bits_per_sample: u8, total_samples: u64) -> [u8; 34] {
+    fn streaminfo_body(
+        sample_rate: u32,
+        channels: u8,
+        bits_per_sample: u8,
+        total_samples: u64,
+    ) -> [u8; 34] {
         let mut body = [0u8; 34];
         body[0..2].copy_from_slice(&4096u16.to_be_bytes()); // min block size
         body[2..4].copy_from_slice(&4096u16.to_be_bytes()); // max block size
@@ -58,7 +63,12 @@ mod tests {
         body
     }
 
-    fn flac_bytes(sample_rate: u32, channels: u8, bits_per_sample: u8, total_samples: u64) -> Vec<u8> {
+    fn flac_bytes(
+        sample_rate: u32,
+        channels: u8,
+        bits_per_sample: u8,
+        total_samples: u64,
+    ) -> Vec<u8> {
         let mut v = b"fLaC".to_vec();
         v.push(0x80); // last-metadata-block flag set, type 0 (STREAMINFO)
         let body = streaminfo_body(sample_rate, channels, bits_per_sample, total_samples);

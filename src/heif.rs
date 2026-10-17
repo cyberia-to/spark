@@ -38,8 +38,11 @@ fn scan_boxes(bytes: &[u8], start: usize, end: usize) -> Option<(u32, u32)> {
             b"ispe" => {
                 let fields_start = body_start + FULLBOX_HEADER_LEN;
                 if fields_start + 8 <= body_end {
-                    let w = u32::from_be_bytes(bytes[fields_start..fields_start + 4].try_into().ok()?);
-                    let h = u32::from_be_bytes(bytes[fields_start + 4..fields_start + 8].try_into().ok()?);
+                    let w =
+                        u32::from_be_bytes(bytes[fields_start..fields_start + 4].try_into().ok()?);
+                    let h = u32::from_be_bytes(
+                        bytes[fields_start + 4..fields_start + 8].try_into().ok()?,
+                    );
                     return Some((w, h));
                 }
             }
@@ -66,7 +69,9 @@ mod tests {
     use super::*;
 
     fn bx(kind: &[u8; 4], body: &[u8]) -> Vec<u8> {
-        let mut v = ((body.len() + BOX_HEADER_LEN) as u32).to_be_bytes().to_vec();
+        let mut v = ((body.len() + BOX_HEADER_LEN) as u32)
+            .to_be_bytes()
+            .to_vec();
         v.extend_from_slice(kind);
         v.extend_from_slice(body);
         v

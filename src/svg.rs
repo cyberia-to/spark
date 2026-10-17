@@ -18,11 +18,14 @@ pub fn dimensions(bytes: &[u8]) -> Option<(f64, f64)> {
     let tag_end = tag_start + text[tag_start..].find('>')?;
     let attrs = &text[tag_start..tag_end];
 
-    if let (Some(width), Some(height)) = (attr_number(attrs, "width"), attr_number(attrs, "height")) {
+    if let (Some(width), Some(height)) = (attr_number(attrs, "width"), attr_number(attrs, "height"))
+    {
         return Some((width, height));
     }
     let view_box = attr_value(attrs, "viewBox")?;
-    let mut parts = view_box.split_whitespace().filter_map(|p| p.parse::<f64>().ok());
+    let mut parts = view_box
+        .split_whitespace()
+        .filter_map(|p| p.parse::<f64>().ok());
     let _min_x = parts.next()?;
     let _min_y = parts.next()?;
     let width = parts.next()?;

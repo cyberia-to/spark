@@ -131,7 +131,8 @@ mod tests {
         let odd_body = b"odd".to_vec(); // 3 bytes: odd, needs 1 pad byte
         let fmt_body_len = 16u32;
         let data = vec![0u8; 100];
-        let riff_size = 4 + (8 + odd_body.len() + 1) + (8 + fmt_body_len as usize) + (8 + data.len());
+        let riff_size =
+            4 + (8 + odd_body.len() + 1) + (8 + fmt_body_len as usize) + (8 + data.len());
         v.extend_from_slice(&(riff_size as u32).to_le_bytes());
         v.extend_from_slice(b"WAVE");
         v.extend_from_slice(b"JUNK");

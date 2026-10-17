@@ -15,8 +15,9 @@
 const SAMPLES_PER_FRAME: u64 = 1152;
 
 // index 0..=15; 0 (free) and 15 (bad) are not usable frame bitrates.
-const BITRATE_KBPS: [u16; 16] =
-    [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0];
+const BITRATE_KBPS: [u16; 16] = [
+    0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 0,
+];
 
 // index 0..=2; 3 is reserved.
 const SAMPLE_RATE_HZ: [u32; 4] = [44100, 48000, 32000, 0];
@@ -92,8 +93,7 @@ pub fn duration_ms(bytes: &[u8]) -> Option<u64> {
 
     let mut total_samples: u64 = 0;
     let mut frames: u64 = 0;
-    loop {
-        let Some(h) = parse_frame_header(bytes, pos) else { break };
+    while let Some(h) = parse_frame_header(bytes, pos) {
         let len = frame_len(&h);
         if len == 0 || pos + len > end {
             break;
@@ -190,7 +190,7 @@ mod tests {
     #[test]
     fn reserved_bitrate_index_is_none() {
         let mut data = frame_bytes(9, 0, false);
-        data[2] = (0x0F << 4) | (0 << 2); // bitrate index 15 = bad
+        data[2] = 0x0F << 4; // bitrate index 15 = bad
         assert_eq!(duration_ms(&data), None);
     }
 

@@ -50,12 +50,20 @@ fn read_tag_value(bytes: &[u8], offset: usize, field_type: u16, little: bool) ->
 
 fn read_u16(bytes: &[u8], offset: usize, little: bool) -> Option<u16> {
     let b: [u8; 2] = bytes.get(offset..offset + 2)?.try_into().ok()?;
-    Some(if little { u16::from_le_bytes(b) } else { u16::from_be_bytes(b) })
+    Some(if little {
+        u16::from_le_bytes(b)
+    } else {
+        u16::from_be_bytes(b)
+    })
 }
 
 fn read_u32(bytes: &[u8], offset: usize, little: bool) -> Option<u32> {
     let b: [u8; 4] = bytes.get(offset..offset + 4)?.try_into().ok()?;
-    Some(if little { u32::from_le_bytes(b) } else { u32::from_be_bytes(b) })
+    Some(if little {
+        u32::from_le_bytes(b)
+    } else {
+        u32::from_be_bytes(b)
+    })
 }
 
 #[cfg(test)]

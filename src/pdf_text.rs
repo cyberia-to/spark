@@ -43,11 +43,7 @@ pub fn extract_text(bytes: &[u8]) -> Option<String> {
         }
         i = op_end + b"TJ".len();
     }
-    if out.is_empty() {
-        None
-    } else {
-        Some(out)
-    }
+    if out.is_empty() { None } else { Some(out) }
 }
 
 /// The `(...)` literal immediately preceding `op_end` (a `Tj` operator's
@@ -185,7 +181,10 @@ mod tests {
     #[test]
     fn multiple_tj_operators_join_with_space() {
         let pdf = b"%PDF-1.4\nBT (First line) Tj (Second line) Tj ET\n";
-        assert_eq!(extract_text(pdf), Some("First line Second line".to_string()));
+        assert_eq!(
+            extract_text(pdf),
+            Some("First line Second line".to_string())
+        );
     }
 
     #[test]

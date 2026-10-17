@@ -129,7 +129,10 @@ mod tests {
         let w_minus_1 = 70000u32 - 1;
         let h_minus_1 = 40000u32 - 1;
         let chunk = [
-            0x00, 0x00, 0x00, 0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
             (w_minus_1 & 0xff) as u8,
             ((w_minus_1 >> 8) & 0xff) as u8,
             ((w_minus_1 >> 16) & 0xff) as u8,

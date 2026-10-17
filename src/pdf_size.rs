@@ -32,7 +32,8 @@ pub fn dimensions(bytes: &[u8]) -> Option<(f64, f64)> {
     for slot in numbers.iter_mut() {
         i = skip_ws(bytes, i);
         let start = i;
-        while matches!(bytes.get(i), Some(b) if b.is_ascii_digit() || *b == b'.' || *b == b'-' || *b == b'+') {
+        while matches!(bytes.get(i), Some(b) if b.is_ascii_digit() || *b == b'.' || *b == b'-' || *b == b'+')
+        {
             i += 1;
         }
         if i == start {

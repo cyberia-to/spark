@@ -141,7 +141,10 @@ mod tests {
 
     #[test]
     fn not_ogg_is_none() {
-        assert_eq!(duration_ms(b"not an ogg file at all, no capture pattern"), None);
+        assert_eq!(
+            duration_ms(b"not an ogg file at all, no capture pattern"),
+            None
+        );
     }
 
     #[test]
