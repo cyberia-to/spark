@@ -10,6 +10,23 @@
 
 use file::{File, Kind};
 
+pub mod audio;
+pub mod bmp;
+pub mod flac;
+pub mod gif_duration;
+pub mod heif;
+pub mod ico;
+pub mod image;
+pub mod mp3;
+pub mod ogg;
+pub mod pdf;
+pub mod pdf_size;
+pub mod pdf_text;
+pub mod svg;
+pub mod tiff;
+pub mod video;
+pub mod webp;
+
 /// Named family of openers that ship with cyb.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SparkId {
